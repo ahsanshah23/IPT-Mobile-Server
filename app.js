@@ -56,7 +56,7 @@ app.use('/userlogin', (req, res) => {
         });
 });
 
-
+//Student FYP1
 
 app.use('/fyp1proposal_add', (req, res) => {
     var Title = req.query.title;
@@ -94,6 +94,91 @@ app.use('/fyp1proposal_view', (req, res) => {
             console.log(err)
         });
 });
+
+app.use('/fyp1proposal_status', (req, res) => {
+    var email = req.query.Email;
+    console.log(email)
+
+    db.execute("Select * from fyp_groups where leaderemail='"+email+"' OR member2email='"+email+"' OR member3email='"+email+"' ")
+        .then(results => {
+             console.log(results[0].length);
+            if(results[0].length>0)
+            {
+                res.send("1");
+            }
+            else
+            {
+                res.send("0");
+            }
+            
+        })
+        .catch(err => {
+            console.log(err) 
+        });
+});
+
+app.use('/fyp1midevaluation_view', (req, res) => {
+
+    db.execute("SELECT * FROM fyp1_mid_evaluation")
+        .then(results => {
+            var total = parseInt(results[0][0].Criteria1_Marks) + parseInt(results[0][0].Criteria2_Marks)
+            // var total = results[0].markcriteria1+results[0].markcriteria2;
+            
+            res.send(results[0])
+            // res.send(total)
+        })
+        .catch(err => {
+            console.log(err)
+        });
+});
+
+app.use('/fyp1finalevaluation_view', (req, res) => {
+
+    db.execute("SELECT * FROM fyp1_final_evaluation")
+        .then(results => {
+          res.send(results[0])
+        })
+        .catch(err => {
+            console.log(err)
+        });
+});
+
+//Student FYP2
+
+app.use('/fyp2midevaluation_view', (req, res) => {
+
+    db.execute("SELECT * FROM fyp2_mid_evaluation")
+        .then(results => {
+            res.send(results[0])
+        })
+        .catch(err => {
+            console.log(err)
+        });
+});
+
+app.use('/fyp2finalevaluation_view', (req, res) => {
+
+    db.execute("SELECT * FROM fyp2_final_evaluation")
+        .then(results => {
+            res.send(results[0])
+        })
+        .catch(err => {
+            console.log(err)
+        });
+});
+
+app.use('/fyp2finalevaluationexternal_view', (req, res) => {
+
+    db.execute("SELECT * FROM fyp2_final_evaluation_external")
+        .then(results => {
+            res.send(results[0])
+        })
+        .catch(err => {
+            console.log(err)
+        });
+});
+
+//Teacher FYP1
 
 app.use('/fyp1proposal_update', (req, res) => {
     var status = req.query.status;
@@ -141,40 +226,6 @@ app.use('/fyp1proposal_list', (req, res) => {
         });
 });
 
-app.use('/fyp1proposal_status', (req, res) => {
-    var email = req.query.Email;
-    console.log(email)
-
-    db.execute("Select * from fyp_groups where leaderemail='"+email+"' OR member2email='"+email+"' OR member3email='"+email+"' ")
-        .then(results => {
-             console.log(results[0].length);
-            if(results[0].length>0)
-            {
-                res.send("1");
-            }
-            else
-            {
-                res.send("0");
-            }
-            
-        })
-        .catch(err => {
-            console.log(err) 
-        });
-});
-
-app.use('/fypgroups', (req, res) => {
-    var email = req.query.Email;
-
-    db.execute("Select * from fyp_groups where supervisor='"+email+"' OR cosupervisor='"+email+"'  ")
-        .then(results => {
-            res.send(results[0])
-        })
-        .catch(err => {
-            console.log(err) 
-        });
-});
-
 app.use('/fyp1midevaluation_add', (req, res) => {
     var Title = req.query.title;
     var leadername = req.query.leadername;
@@ -208,21 +259,6 @@ app.use('/fyp1midevaluation_add', (req, res) => {
         .then(results => { 
             res.send('Inserted');
         })                                                      
-});
-
-app.use('/fyp1midevaluation_view', (req, res) => {
-
-    db.execute("SELECT * FROM fyp1_mid_evaluation")
-        .then(results => {
-            var total = parseInt(results[0][0].Criteria1_Marks) + parseInt(results[0][0].Criteria2_Marks)
-            // var total = results[0].markcriteria1+results[0].markcriteria2;
-            
-            res.send(results[0])
-            // res.send(total)
-        })
-        .catch(err => {
-            console.log(err)
-        });
 });
 
 app.use('/fyp1finalevaluation_add', (req, res) => {
@@ -270,16 +306,7 @@ app.use('/fyp1finalevaluation_add', (req, res) => {
         })                                                      
 });
 
-app.use('/fyp1finalevaluation_view', (req, res) => {
-
-    db.execute("SELECT * FROM fyp1_final_evaluation")
-        .then(results => {
-          res.send(results[0])
-        })
-        .catch(err => {
-            console.log(err)
-        });
-});
+//Teacher FYP2
 
 app.use('/fyp2midevaluation_add', (req, res) => {
     var Project_title = req.query.title;
@@ -293,22 +320,12 @@ app.use('/fyp2midevaluation_add', (req, res) => {
     var Progress_Comments = req.query.progressComments;
     var Evaluator1_Name = req.query.evaluatorEmail;
     var Evaluator2_Name = req.query.coevaluatorEmail;
+    var submitted_by = req.query.submitted_by;
 
-    db.execute("INSERT INTO fyp2_mid_evaluation (ID, Project_title, Team_Leader, Team_Member2, Team_Member3, supervisor_email, cosupervisor_email, Project_Progress, Documentation_Status, Progress_Comments, Evaluator1_Name, Evaluator2_Name )     VALUES (' ', '" + Project_title + "' ,'" + Team_Leader + "','" + Team_Member2 + "','" + Team_Member3 + "','" + supervisor_email + "','" + cosupervisor_email + "','" + Project_Progress + "','" + Documentation_Status + "','" + Progress_Comments + "','" + Evaluator1_Name + "','" + Evaluator2_Name + "') ")
+    db.execute("INSERT INTO fyp2_mid_evaluation (ID, Project_title, Team_Leader, Team_Member2, Team_Member3, supervisor_email, cosupervisor_email, Project_Progress, Documentation_Status, Progress_Comments, Evaluator1_Name, Evaluator2_Name, submitted_by )     VALUES (' ', '" + Project_title + "' ,'" + Team_Leader + "','" + Team_Member2 + "','" + Team_Member3 + "','" + supervisor_email + "','" + cosupervisor_email + "','" + Project_Progress + "','" + Documentation_Status + "','" + Progress_Comments + "','" + Evaluator1_Name + "','" + Evaluator2_Name + "','" + submitted_by + "') ")
     .then(results => {
         res.send('Inserted');
     })
-});
-
-app.use('/fyp2midevaluation_view', (req, res) => {
-
-    db.execute("SELECT * FROM fyp2_mid_evaluation")
-        .then(results => {
-            res.send(results[0])
-        })
-        .catch(err => {
-            console.log(err)
-        });
 });
 
 app.use('/fyp2finalevaluation_add', (req, res) => {
@@ -326,23 +343,50 @@ app.use('/fyp2finalevaluation_add', (req, res) => {
     var Member3_Marks = req.query.member3Mark;
     var Jury1_Name = req.query.evaluator;
     var Jury2_Name = req.query.coevaluator;
+    var submitted_by = req.query.submitted_by;
 
-    db.execute("INSERT INTO fyp2_final_evaluation (ID, Project_Title, leader_name, member2_name, member3_name, supervisor_email, cosupervisor_email, leader_email, member2_email, member3_email, leader_Marks, Member2_Marks, Member3_Marks, Jury1_Name, Jury2_Name ) VALUES (' ', '" + Project_Title + "' ,'" + leader_name + "','" + member2_name + "','" + member3_name + "','" + supervisor_email + "','" + cosupervisor_email + "','" + leader_email + "','" + member2_email + "','" + member3_email + "','" + leader_Marks + "','" + Member2_Marks + "','" + Member3_Marks + "','" + Jury1_Name + "','" + Jury2_Name + "') ")
+    db.execute("INSERT INTO fyp2_final_evaluation (ID, Project_Title, leader_name, member2_name, member3_name, supervisor_email, cosupervisor_email, leader_email, member2_email, member3_email, leader_Marks, Member2_Marks, Member3_Marks, Jury1_Name, Jury2_Name, submitted_by ) VALUES (' ', '" + Project_Title + "' ,'" + leader_name + "','" + member2_name + "','" + member3_name + "','" + supervisor_email + "','" + cosupervisor_email + "','" + leader_email + "','" + member2_email + "','" + member3_email + "','" + leader_Marks + "','" + Member2_Marks + "','" + Member3_Marks + "','" + Jury1_Name + "','" + Jury2_Name + "','" + submitted_by + "') ")
     .then(results => {
         res.send('Inserted');
     })
 });
 
-app.use('/fyp2finalevaluation_view', (req, res) => {
+app.use('/fyp1proposal_status_teacher', (req, res) => {
+    var email = req.query.Email;
 
-    db.execute("SELECT * FROM fyp2_final_evaluation")
+    db.execute("Select * from fyp1_proposal where leader_email='"+email+"' AND status='' AND comment=''  ")
+        .then(results => {
+            // console.log(results[0].length);
+            if(results[0].length>0)
+            {
+                res.send("1");
+            }
+            else
+            {
+                res.send("0");
+            }
+            
+        })
+        .catch(err => {
+            console.log(err) 
+        });
+});
+
+//FYP Groups
+
+app.use('/fypgroups', (req, res) => {
+    var email = req.query.Email;
+
+    db.execute("Select * from fyp_groups where supervisor='"+email+"' OR cosupervisor='"+email+"'  ")
         .then(results => {
             res.send(results[0])
         })
         .catch(err => {
-            console.log(err)
+            console.log(err) 
         });
 });
+
+//External
 
 app.use('/fyp2finalevaluationexternal_add', (req, res) => {
     var Project_Title = req.query.title;
@@ -366,38 +410,6 @@ app.use('/fyp2finalevaluationexternal_add', (req, res) => {
     .then(results => {
         res.send('Inserted');
     })
-});
-
-app.use('/fyp2finalevaluationexternal_view', (req, res) => {
-
-    db.execute("SELECT * FROM fyp2_final_evaluation_external")
-        .then(results => {
-            res.send(results[0])
-        })
-        .catch(err => {
-            console.log(err)
-        });
-});
-
-app.use('/fyp1proposal_status_teacher', (req, res) => {
-    var email = req.query.Email;
-
-    db.execute("Select * from fyp1_proposal where leader_email='"+email+"' AND status='' AND comment=''  ")
-        .then(results => {
-            // console.log(results[0].length);
-            if(results[0].length>0)
-            {
-                res.send("1");
-            }
-            else
-            {
-                res.send("0");
-            }
-            
-        })
-        .catch(err => {
-            console.log(err) 
-        });
 });
 
 app.use('/jurysubmitted_list', (req, res) => {
